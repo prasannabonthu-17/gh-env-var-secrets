@@ -28,6 +28,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate MongoDB URI
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          node -e "const uri = process.env.MONGODB_URI || ''; if (!/^mongodb(\+srv)?:\/\/.+\.[a-z0-9.-]+\.[a-z]{2,}.*$/i.test(uri)) { console.error('Invalid MONGODB_URI secret. Expected a MongoDB Atlas URI like mongodb+srv://user:password@cluster0.oj4wbe4.mongodb.net/?retryWrites=true&w=majority'); process.exit(1); } console.log('MONGODB_URI format looks valid.');"
+
       - name: Run server
         run: npm start & npx wait-on http://127.0.0.1:$PORT
 
